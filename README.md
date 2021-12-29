@@ -8,7 +8,7 @@ Install-Package Microsoft.Identity.Web
 `Program.cs`
 ```
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAD"));
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 ```
 ```
 app.UseAuthentication();
