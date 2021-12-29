@@ -31,11 +31,20 @@ public IEnumerable<WeatherForecast> GetByReader()
 }
 ```
 
+`launchSettings.json`
+```
+  "iisSettings": {
+    "iisExpress": {
+      "sslPort": 44321
+    }
+  },
+```
+
 ## App registration in Azure Portal
 1. Register app in AAD
 2. Set up AAD app
-    - Redirect URI: `https://localhost:44352/signin-oidc`
-    - Front-channel logout URL: `https://localhost:44352/signout-oidc`
+    - Redirect URI: `https://localhost:44321/signin-oidc`
+    - Front-channel logout URL: `https://localhost:44321/signout-oidc`
     - Implicit grant and hybrid flows: `ID tokens`
 3. Expose an API > Add a scope
     - Scope: `api://{clientId}`
