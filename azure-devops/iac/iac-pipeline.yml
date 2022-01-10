@@ -1,0 +1,26 @@
+trigger: none
+
+variables:
+- template: ../variables-template.yml
+- group: vg-sample
+- name: ResourceGroupName
+  value: rg-$(BASE_NAME)-$(ENVIRONMENT_SYMBOL)
+
+jobs:
+- job: AzureResourceGroupDeployment
+  pool:
+    vmImage: windows-latest
+  steps:
+  - task: AzureResourceManagerTemplateDeployment@3
+    inputs:
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: Create Or Update Resource Group
+      resourceGroupName: $(ResourceGroupName)
+      location: $(LOCATION)
+      templateLocation: Linked artifact
+      csmFile: $(Build.SourcesDirectory)/arm-templates/azuredeploy.json
+      overrideParameters: "-base_name $(BASE_NAME)
+                          -environment_symbol $(ENVIRONMENT_SYMBOL)
+                          -appsrvplan_sku $(APPSRVPLAN_SKU)"
+      deploymentMode: Incremental
+    displayName: Deploy Azure resources to the environment

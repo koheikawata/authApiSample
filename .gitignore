@@ -4,6 +4,9 @@
 # Local settings
 appsettings.Development.json
 
+# vscode
+.vscode/
+
 # User-specific files
 *.suo
 *.user

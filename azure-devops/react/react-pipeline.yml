@@ -1,0 +1,53 @@
+trigger: none
+
+variables:
+- template: ../variables-template.yml
+- group: vg-sample
+- name: ResourceGroupName
+  value: rg-$(BASE_NAME)-$(ENVIRONMENT_SYMBOL)
+- name: WebAppName
+  value: ase-$(BASE_NAME)-$(ENVIRONMENT_SYMBOL)
+- name: ArtifactName
+  value: Frontend
+
+jobs:
+- job: ReactBuildDeploy
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - task: NodeTool@0
+    displayName: Select Node version
+    inputs:
+      versionSpec: 16.x
+  - task: Npm@1
+    displayName: Install Node packages
+    inputs:
+      workingDir: $(Build.SourcesDirectory)/frontend
+      command: install
+  - task: Npm@1
+    displayName: Build React app
+    inputs:
+      workingDir: $(Build.SourcesDirectory)/frontend
+      command: custom
+      customCommand: run build
+  - task: ArchiveFiles@2
+    displayName: Convert build folder to zip
+    inputs:
+      rootFolderOrFile: $(Build.SourcesDirectory)/frontend/build
+      includeRootFolder: false
+      archiveType: zip
+      archiveFile: $(Build.StagingDirectory)/build.zip
+      replaceExistingArchive: true
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Artifacts
+    inputs:
+      PathtoPublish: $(Build.StagingDirectory)
+      ArtifactName: $(ArtifactName)
+      publishLocation: Container
+  - task: AzureWebApp@1
+    displayName: Deploy to App Service
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      appType: webApp
+      appName: $(WebAppName)
+      package: $(Build.StagingDirectory)/build.zip
